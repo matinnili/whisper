@@ -18,7 +18,7 @@ COPY ./requirements.txt /app/
 RUN pip install --upgrade pip && \
     pip install torch --extra-index-url https://download.pytorch.org/whl/cpu && \
     pip install git+https://github.com/openai/whisper.git \
-    pip install requirements.txt
+    pip install -r requirements.txt
 COPY . /app/
 
 CMD  ["fastapi", "run", "main.py", "--port", "80","--reload"]
