@@ -1,25 +1,15 @@
 FROM python:3.10-slim
 
 # Set environment variables for pip
+WORKDIR /app
 
-ENV PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DEFAULT_TIMEOUT=600 \
-    PIP_RETRIES=20\
-    DOCKER_TMP=/home/container/tmp
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    ffmpeg \
-    libsndfile1 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install pip packages with extended timeout and retries
-RUN pip install --upgrade pip && \
-    pip install torch --extra-index-url https://download.pytorch.org/whl/cpu && \
-    pip install git+https://github.com/openai/whisper.git \
-    pip3 install fastapi
+COPY requirements.txt requirements.txt
+RUN apt-get update && apt-get install git -y
+# If are experiencing errors ImportError: cannot import name 'soft_unicode' from 'markupsafe'  please uncomment below
+# RUN pip3 install markupsafe==2.0.1
+RUN pip3 install -r requirements.txt
+RUN pip3 install "git+https://github.com/openai/whisper.git" 
+RUN apt-get install -y ffmpeg
 
 
 COPY . /app/
