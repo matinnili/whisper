@@ -1,8 +1,11 @@
-FROM python:3.10
+FROM python:3.10-slim
 
 # Set environment variables for pip
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DEFAULT_TIMEOUT=600 \
+    PIP_RETRIES=20
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -11,11 +14,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install pip packages with extended timeout and retries
-WORKDIR /app
-COPY ./requirements.txt /app/
-RUN pip3 install --upgrade pip && \
-    pip3 install torch --extra-index-url https://download.pytorch.org/whl/cpu && \
-    pip3 install git+https://github.com/openai/whisper.git \
+RUN pip install --upgrade pip && \
+    pip install torch --extra-index-url https://download.pytorch.org/whl/cpu && \
+    pip install git+https://github.com/openai/whisper.gitt \
     pip3 install fastapi
 
 
