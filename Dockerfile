@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 # Install pip packages with extended timeout and retries
 RUN pip install --upgrade pip && \
     pip install torch --extra-index-url https://download.pytorch.org/whl/cpu && \
-    pip install git+https://github.com/openai/whisper.gitt \
+    pip install git+https://github.com/openai/whisper.git \
     pip3 install fastapi
 
 
