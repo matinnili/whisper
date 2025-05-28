@@ -1,7 +1,7 @@
 services:
   backend:
     
-    build : .
+    image : whisper-api:latest
     volumes:
      - .:/app/
     ports:
