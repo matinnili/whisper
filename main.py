@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Response,FastAPI,File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import whisper
+import os
+import datetime as time
 
 app = FastAPI()
 app.add_middleware(
@@ -12,10 +14,25 @@ app.add_middleware(
 )
 
 @app.post("/api/v1/whisper")
-def transcribe(file : UploadFile):
+async def transcript(file : UploadFile):
 
-    stt = whisper.load_model("base.en")
-    result=stt.transcribe(file, fp16=False)
+    # file=file.file
+    start_time=time.datetime.now()
+    print(type(file))
+    stt = whisper.load_model("large").to("cuda")
+    cwd=os.getcwd()
+    path=os.path.join(cwd, "temp.wav")
+    with open(path, "wb") as f:
+        f.write(await file.read())
+    
+    result=stt.transcribe(path)
+    if os.path.exists(path):
+        os.remove(path)
+        
+    
     text = result["text"].strip()
+    end_time=time.datetime.now()
+    total_time= end_time - start_time
+    print(f"Transcription completed in {end_time - start_time} seconds")
     return text
 
