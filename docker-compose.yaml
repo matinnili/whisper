@@ -1,7 +1,7 @@
 services:
   backend:
     
-    image : whisper-api:latest
+    build : .
     deploy:
       resources:
         reservations:
