@@ -41,8 +41,17 @@ services:
   celery:
     build: .
     container_name: celery_worker
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: nvidia
+       
     volumes:
-      - ./app:/app
+      - .:/app
     command: celery -A celery_worker.app worker --loglevel=info
     depends_on:
       - redis

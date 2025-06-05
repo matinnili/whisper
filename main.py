@@ -27,10 +27,16 @@ async def transcript(file : UploadFile):
     
     # print(type(file))
     # stt = whisper.load_model("turbo").to("cuda")
-    # cwd=os.getcwd()
-    # path=os.path.join(cwd, "temp.wav")
-    # with open(path, "wb") as f:
-    #     f.write(await file.read())
+    cwd=os.getcwd()
+    path=os.path.join(cwd, "temp.wav")
+    if os.path.exists(path):
+       os.remove(path)
+    with open(path, "wb") as f:
+        f.write(await file.read())
+        task = transcribe_audio.delay(path)
+
+        
+    return {"task_id": task.id}
     
     # start_time=time.datetime.now()
     # result=stt.transcribe(path,language="fa")
@@ -44,13 +50,13 @@ async def transcript(file : UploadFile):
     # total_time= end_time - start_time
     # print(f"Transcription completed in {end_time - start_time} seconds")
     # return text
-    with tempfile.NamedTemporaryFile(delete=False, suffix=file.filename) as tmp:
-        contents = await file.read()
-        tmp.write(contents)
-        tmp.flush()
-        task = transcribe_audio.delay(tmp.name)
-        return {"task_id": task.id}
-        
+    # with tempfile.NamedTemporaryFile(delete=False, suffix=file.filename) as tmp:
+    #     contents = await file.read()
+    #     tmp.write(contents)
+    #     tmp.flush()
+    #     task = transcribe_audio.delay(tmp.name)
+    #     return {"task_id": task.id}
+
 @app.get("/result/{task_id}")
 async def get_result(task_id: str):
     result = AsyncResult(task_id, app=celery_app)
