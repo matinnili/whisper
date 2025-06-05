@@ -9,17 +9,25 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+    runtime: nvidia
+       
     volumes:
      - .:/app/
     ports:
-     - 9000:80
+     - 9200:80
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    # device_requests:
+    #   - driver: nvidia
+    #     count: all
+    #     capabilities: [gpu]
   master:
     image: locustio/locust
     ports:
-     - "8089:8089"
+     - "18767:9089"
     volumes:
       - ./:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --master -H http://master:8089
+    command: -f /mnt/locust/locustfile.py --master -H http://backend:80
   
   worker:
     image: locustio/locust
