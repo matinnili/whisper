@@ -13,11 +13,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"]="expandable_segments:True"
+
+
 @app.post("/api/v1/whisper")
 async def transcript(file : UploadFile):
 
     # file=file.file
-    start_time=time.datetime.now()
+    
     print(type(file))
     stt = whisper.load_model("turbo").to("cuda")
     cwd=os.getcwd()
@@ -25,7 +28,8 @@ async def transcript(file : UploadFile):
     with open(path, "wb") as f:
         f.write(await file.read())
     
-    result=stt.transcribe(path)
+    start_time=time.datetime.now()
+    result=stt.transcribe(path,language="fa")
     if os.path.exists(path):
         os.remove(path)
         
