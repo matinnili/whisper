@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import whisper
 import os
 import datetime as time
+from celery_worker import transcribe_audio
+from celery.result import AsyncResult
+from celery_worker import app as celery_app
+import tempfile
 
 app = FastAPI()
 app.add_middleware(
@@ -21,22 +25,36 @@ async def transcript(file : UploadFile):
 
     # file=file.file
     
-    print(type(file))
-    stt = whisper.load_model("turbo").to("cuda")
-    cwd=os.getcwd()
-    path=os.path.join(cwd, "temp.wav")
-    with open(path, "wb") as f:
-        f.write(await file.read())
+    # print(type(file))
+    # stt = whisper.load_model("turbo").to("cuda")
+    # cwd=os.getcwd()
+    # path=os.path.join(cwd, "temp.wav")
+    # with open(path, "wb") as f:
+    #     f.write(await file.read())
     
-    start_time=time.datetime.now()
-    result=stt.transcribe(path,language="fa")
-    if os.path.exists(path):
-        os.remove(path)
+    # start_time=time.datetime.now()
+    # result=stt.transcribe(path,language="fa")
+    # transcribe_audio.delay(path
+    # if os.path.exists(path):
+    #     os.remove(path)
         
     
-    text = result["text"].strip()
-    end_time=time.datetime.now()
-    total_time= end_time - start_time
-    print(f"Transcription completed in {end_time - start_time} seconds")
-    return text
+    # text = result["text"].strip()
+    # end_time=time.datetime.now()
+    # total_time= end_time - start_time
+    # print(f"Transcription completed in {end_time - start_time} seconds")
+    # return text
+    with tempfile.NamedTemporaryFile(delete=False, suffix=file.filename) as tmp:
+        contents = await file.read()
+        tmp.write(contents)
+        tmp.flush()
+        task = transcribe_audio.delay(tmp.name)
+        return {"task_id": task.id}
+        
+@app.get("/result/{task_id}")
+async def get_result(task_id: str):
+    result = AsyncResult(task_id, app=celery_app)
+    if result.ready():
+        return result.result
+    return {"status": "processing"}
 

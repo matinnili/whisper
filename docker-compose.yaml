@@ -38,5 +38,19 @@ services:
     command: -f /mnt/locust/locustfile.py --worker --master-host master
     environment:
       LOCUST_WORKERS: 3
+  celery:
+    build: .
+    container_name: celery_worker
+    volumes:
+      - ./app:/app
+    command: celery -A celery_worker.app worker --loglevel=info
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: redis_broker
+    ports:
+      - "6379:6379"
 volumes:
   .:
