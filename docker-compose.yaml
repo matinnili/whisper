@@ -14,7 +14,7 @@ services:
     volumes:
      - .:/app/
     ports:
-     - 9200:80
+     - 9000:80
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     # device_requests:
@@ -24,7 +24,9 @@ services:
   master:
     image: locustio/locust
     ports:
-     - "18767:9089"
+     - "9200:8089"
+
+    
     volumes:
       - ./:/mnt/locust
     command: -f /mnt/locust/locustfile.py --master -H http://backend:80
@@ -34,5 +36,7 @@ services:
     volumes:
       - ./:/mnt/locust
     command: -f /mnt/locust/locustfile.py --worker --master-host master
+    environment:
+      LOCUST_WORKERS: 3
 volumes:
   .:

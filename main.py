@@ -19,7 +19,7 @@ async def transcript(file : UploadFile):
     # file=file.file
     start_time=time.datetime.now()
     print(type(file))
-    stt = whisper.load_model("large").to("cuda")
+    stt = whisper.load_model("turbo").to("cuda")
     cwd=os.getcwd()
     path=os.path.join(cwd, "temp.wav")
     with open(path, "wb") as f:
