@@ -60,7 +60,8 @@ async def transcript(file : UploadFile):
 @app.get("/result/{task_id}")
 async def get_result(task_id: str):
     result = AsyncResult(task_id, app=celery_app)
+    print(f"Checking result for task_id: {task_id}, status: {result.status}")
     if result.ready():
-        return result.result
+        return result.result["text"]
     return {"status": "processing"}
 
