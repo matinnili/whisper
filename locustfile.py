@@ -12,8 +12,9 @@ class QuickstartUser(HttpUser):
         task_id = response.json().get("task_id")
 
         # Poll the result until it's ready
+        payload={"id":task_id}
+        result = self.client.post(f"/result",json=payload)
         
-        result = self.client.get(f"/result/{task_id}")
         return result
 
 
