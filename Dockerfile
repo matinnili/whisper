@@ -14,4 +14,4 @@ RUN apt-get install -y ffmpeg
 
 COPY . /app/
 
-CMD  ["fastapi", "run", "main.py", "--port", "80","--workers","5"]
+CMD  ["fastapi", "run", "main.py", "--port", "80","--workers","12"]
