@@ -64,5 +64,5 @@ async def get_result(task_id: str):
     print(f"Checking result for task_id: {task_id}, status: {result.status}")
     while not result.ready():
         asyncio.sleep(1)
-    return result["text"]
+    return result.result["text"]
 
