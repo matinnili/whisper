@@ -7,6 +7,7 @@ from celery_worker import transcribe_audio
 from celery.result import AsyncResult
 from celery_worker import app as celery_app
 import tempfile
+import asyncio
 
 app = FastAPI()
 app.add_middleware(
@@ -61,7 +62,7 @@ async def transcript(file : UploadFile):
 async def get_result(task_id: str):
     result = AsyncResult(task_id, app=celery_app)
     print(f"Checking result for task_id: {task_id}, status: {result.status}")
-    if result.ready():
-        return result.result["text"]
-    return {"status": "processing"}
+    while not result.ready():
+        asyncio.sleep(1)
+    return result["text"]
 
