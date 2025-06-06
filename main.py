@@ -64,6 +64,6 @@ async def get_result(task_id: dict):
     result = AsyncResult(task_id, app=celery_app)
     print(f"Checking result for task_id: {task_id}, status: {result.status}")
     while not result.ready():
-        asyncio.sleep(1)
+        asyncio.sleep(0.500)
     return result.result["text"]
 
