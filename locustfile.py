@@ -12,11 +12,10 @@ class QuickstartUser(HttpUser):
         task_id = response.json().get("task_id")
 
         # Poll the result until it's ready
-        for _ in range(10):
-            result = self.client.get(f"/result/{task_id}")
-            if result.status_code == 200 and "text" in result.json():
-                break
-            time.sleep(1)
+        
+        result = self.client.get(f"/result/{task_id}")
+        return result
+
 
 
 
