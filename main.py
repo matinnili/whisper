@@ -30,8 +30,8 @@ async def transcript(file : UploadFile):
     
     start_time=time.datetime.now()
     result=stt.transcribe(path,language="fa")
-    if os.path.exists(path):
-        os.remove(path)
+    # if os.path.exists(path):
+    #     os.remove(path)
         
     
     text = result["text"].strip()
